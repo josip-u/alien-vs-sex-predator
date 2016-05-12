@@ -1,4 +1,5 @@
 import xml.dom.minidom
+from html import unescape
 
 
 def parse_xml(file_name):
@@ -46,12 +47,64 @@ def parse_messages(conversations, positive_inputs):
         messages = conversation.getElementsByTagName("message")[:]
         for message in messages:
             line = message.getAttribute("line")
-            if not message.hasAttribute("text"):
+            node = message.getElementsByTagName("text")
+            if not node or not node[0].childNodes:
                 continue
             text = message.getElementsByTagName("text")[0].childNodes[0].data
+            text = unescape(text)
             inputs.append(text)
             if (id, line) in positive_inputs:
                 outputs.append(1)
+                covered_positive_inputs.append((id, line))
             else:
                 outputs.append(0)
     return inputs, outputs
+	
+	
+def get_documents(conversations):
+	"""
+	:param conversations:		list - DOM type
+	:return:					dictionary, set
+		- returns a dictionary of documents by author
+		- document is a list of every message sent by particular user (author)
+		- also returns a set of authors' id
+	"""
+	inputs = {}
+    for conversation in conversations:
+        messages = conversation.getElementsByTagName("message")[:]
+        for message in messages:
+            text_node = message.getElementsByTagName("text")
+            author_node = message.getElementsByTagName("author")
+            if not (text_node and text_node[0].childNodes and author_node
+                    and author_node[0].childNodes):
+                continue
+            text = text_node[0].childNodes[0].data
+            author = author_node[0].childNodes[0].data
+            text = unescape(text)
+            if author not in inputs.keys():
+                inputs[author] = [text]
+            else:
+                inputs[author].append(text)
+    return inputs, set(inputs.keys())
+	
+
+def get_outputs_for_authors(file_name, authors):
+    """
+    :param file_name: string
+    :param authors:   set
+    :return:          dictionary
+    - returns a dictionary of outputs for ML
+    - file_name is the name of the file with predators' id
+    - authors is the set of all users' id
+    """
+    predators = []
+    outputs = {}
+    for author in authors:
+        outputs[author] = 0
+    file = open(file_name, "r")
+    for line in file:
+        line = line.split()
+        line = line[0]
+        outputs[line] = 1
+        predators.append(line)
+    return outputs, predators
