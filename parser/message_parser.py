@@ -1,5 +1,6 @@
 import xml.dom.minidom
 from html import unescape
+from message import Message
 
 
 def parse_xml(file_name):
@@ -62,29 +63,36 @@ def parse_messages(conversations, positive_inputs):
 	
 	
 def get_documents(conversations):
-	"""
-	:param conversations:		list - DOM type
-	:return:					dictionary, set
-		- returns a dictionary of documents by author
-		- document is a list of every message sent by particular user (author)
-		- also returns a set of authors' id
-	"""
-	inputs = {}
+    """
+    :param conversations:       list - DOM type
+    :return:                    dictionary, set
+        - returns a dictionary of documents by author
+        - document is a list of Message class objects
+        - each message includes a message text, time stamp, conversation id and message line
+        - also returns a set of authors' id
+    """
+    inputs = {}
     for conversation in conversations:
+        conversation_id = conversation.getAttribute("id")
         messages = conversation.getElementsByTagName("message")[:]
         for message in messages:
+            message_line = message.getAttribute("line")
             text_node = message.getElementsByTagName("text")
             author_node = message.getElementsByTagName("author")
+            time_node = message.getElementsByTagName("time")
             if not (text_node and text_node[0].childNodes and author_node
                     and author_node[0].childNodes):
                 continue
             text = text_node[0].childNodes[0].data
             author = author_node[0].childNodes[0].data
+            time = time_node[0].childNodes[0].data
             text = unescape(text)
+            time = int(time[:2])
+            message_obj = Message(text, time, conversation_id, message_line)
             if author not in inputs.keys():
-                inputs[author] = [text]
+                inputs[author] = [message_obj]
             else:
-                inputs[author].append(text)
+                inputs[author].append(message_obj)
     return inputs, set(inputs.keys())
 	
 
