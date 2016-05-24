@@ -60,20 +60,15 @@ def filter_by_class_count(user_message_dict, user_class_dict, class_count_dict):
 
 
 def to_time_vector(messages, time_splits):
-    assert len(time_splits) == 3, "expected 3 time splits"
-
     time = 0
     for message in messages:
         time += message._time
     time /= len(messages)
 
-    time_vector = [[0, 0, 0]]
-    if time >= time_splits[2] and time < time_splits[0]:
-        time_vector[0][0] = 1
-    elif time >= time_splits[0] and time < time_splits[1]:
-        time_vector[0][1] = 1
-    else:
-        time_vector[0][2] = 1
+    time_vector = [[0 for _ in time_splits]]
+    for i in range(len(time_splits)):
+        if time >= time_splits[i-1] and time < time_splits[i]:
+            time_vector[0][i] = 1
     return np.array(time_vector)
 
 
