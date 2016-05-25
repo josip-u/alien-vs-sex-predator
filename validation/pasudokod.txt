@@ -1,0 +1,11 @@
+vau vau vau
+
+fakat pisi:
+    podjela train test 70:30
+        petlja za train s različitim brojem neg primjera po omjerima
+            dobiveni train na k=5 foldova
+            grid srć na tome
+                prosjek za sve foldove
+            pamti najbolje parametre grid srča
+            train na svih 5 foldova
+            eval na test setu

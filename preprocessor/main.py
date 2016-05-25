@@ -79,6 +79,7 @@ print(class_count_dict)
 print()
 '''
 
+'''
 class_count_dict[0] = 120
 class_count_dict[1] = 120
 #max_negatives = 20000
@@ -100,5 +101,7 @@ while True:
     else:
         break
 print()
+'''
 
-
+users_vec, input_vec, output_vec = build_classifier_io(ok_users, outputs, tfidf_builder, fit_builder=False)
+pickle._dump(tfidf_builder, open("tfidf_builder.p", "wb"))

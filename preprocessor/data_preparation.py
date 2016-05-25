@@ -59,6 +59,15 @@ def filter_by_class_count(user_message_dict, user_class_dict, class_count_dict):
     return filtered_user_message_dict
 
 
+def filter_by_id(user_message_dict, user_ids):
+    filtered_user_message_dict = {}
+
+    for user in user_ids:
+        filtered_user_message_dict[user] = user_message_dict[user]
+
+    return filtered_user_message_dict
+
+
 def to_time_vector(messages, time_splits):
     time = 0
     for message in messages:
