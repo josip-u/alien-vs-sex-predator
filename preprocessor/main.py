@@ -67,8 +67,8 @@ ok_users = filter_by_message_count(inputs, threshold)
 #vec = tfidf_builder.to_tfidf_vector(documents[0])
 #print(type(vec), len(vec))
 
-class_count_dict = {}
 '''
+class_count_dict = {}
 for user in ok_users:
     user_class = outputs[user]
     if user_class in class_count_dict:
@@ -103,5 +103,6 @@ while True:
 print()
 '''
 
-users_vec, input_vec, output_vec = build_classifier_io(ok_users, outputs, tfidf_builder, fit_builder=False)
+users_vec, input_vec, output_vec = build_classifier_io(ok_users, outputs, tfidf_builder, fit_builder=True)
+print(users_vec.shape, input_vec.shape, output_vec.shape)
 pickle._dump(tfidf_builder, open("tfidf_builder.p", "wb"))

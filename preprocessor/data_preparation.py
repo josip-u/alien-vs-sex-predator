@@ -91,7 +91,7 @@ def to_input_vector(messages, tfidf_builder, time_splits):
 def build_classifier_io(user_messages_dict, user_class_dict, tfidf_builder, fit_builder=False, time_splits=[7, 15, 23]):
     if fit_builder:
         documents = to_documents(user_messages_dict)
-        tfidf_builder.build_tfidf(documents)
+        tfidf_builder.to_tfidf(documents)
 
     user_vector = []
     input_vector = []
