@@ -69,15 +69,24 @@ def filter_by_id(user_message_dict, user_ids):
 
 
 def to_time_vector(messages, time_splits):
-    time = 0
-    for message in messages:
-        time += message._time
-    time /= len(messages)
-
     time_vector = [[0 for _ in time_splits]]
-    for i in range(len(time_splits)):
-        if time >= time_splits[i-1] and time < time_splits[i]:
-            time_vector[0][i] = 1
+
+    for message in messages:
+        time = message._time
+        for i in range(len(time_splits)):
+            lbound = time_splits[i-1]
+            ubound = time_splits[i]
+            if time >= lbound and time < ubound:
+                time_vector[0][i] += 1
+                break
+            elif lbound > ubound and (time >= lbound or time < ubound):
+                time_vector[0][i] += 1
+                break
+
+    max_slot_value = max(time_vector[0])
+    for i in range(len(time_vector)):
+        time_vector[0][i] = 1 if time_vector[0][i] == max_slot_value else 0
+
     return np.array(time_vector)
 
 
@@ -97,10 +106,14 @@ def build_classifier_io(user_messages_dict, user_class_dict, tfidf_builder, fit_
     input_vector = []
     output_vector = []
 
+    counter = 1
+    total = len(user_messages_dict)
     for user in user_messages_dict:
+        print(str(counter) + "/" + str(total))
+        counter += 1
         user_vector.append(user)
         messages = user_messages_dict[user]
         input_vector.append(to_input_vector(messages, tfidf_builder, time_splits)[0])
         output_vector.append(user_class_dict[user])
 
-    return np.array(user_vector), np.array(input_vector), np.array(output_vector)
+    return user_vector, np.array(input_vector), np.array(output_vector)
