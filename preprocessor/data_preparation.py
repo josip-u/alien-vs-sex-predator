@@ -36,11 +36,12 @@ def to_documents(user_message_dict):
     return documents
 
 
-def filter_by_message_count(user_message_dict, threshold):
+def filter_by_message_count(user_message_dict, lbound, ubound):
     filtered_user_message_dict = {}
 
     for user in user_message_dict:
-        if len(user_message_dict[user]) > threshold:
+        msg_count = len(user_message_dict[user])
+        if msg_count > lbound and msg_count < ubound:
             filtered_user_message_dict[user] = user_message_dict[user]
 
     return filtered_user_message_dict
