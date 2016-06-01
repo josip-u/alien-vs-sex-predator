@@ -34,7 +34,11 @@ documents = to_documents(ok_users)
 #tfidf_builder.to_tfidf(documents)
 
 user_duration_dict = {}
+total = len(ok_users)
+counter = 0
 for user in ok_users:
+    print(str(counter) + "/" + str(total))
+    counter += 1
     messages = ok_users[user]
     document = to_document(messages)
     start = time()
