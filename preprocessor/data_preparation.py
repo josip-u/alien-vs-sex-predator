@@ -60,11 +60,26 @@ def filter_by_class_count(user_message_dict, user_class_dict, class_count_dict):
     return filtered_user_message_dict
 
 
-def filter_by_id(user_message_dict, user_ids):
+def filter_by_id(user_message_dict, user_ids, exclude=False):
     filtered_user_message_dict = {}
 
-    for user in user_ids:
-        filtered_user_message_dict[user] = user_message_dict[user]
+    if exclude:
+        for user in user_message_dict:
+            if user not in user_ids:
+                filtered_user_message_dict[user] = user_message_dict[user]
+    else:
+        for user in user_ids:
+            filtered_user_message_dict[user] = user_message_dict[user]
+
+    return filtered_user_message_dict
+
+
+def filter_by_duration(user_message_dict, user_duration_dict, threshold):
+    filtered_user_message_dict = {}
+
+    for user in user_duration_dict:
+        if user_duration_dict[user] < threshold:
+            filtered_user_message_dict[user] = user_message_dict[user]
 
     return filtered_user_message_dict
 
@@ -117,4 +132,4 @@ def build_classifier_io(user_messages_dict, user_class_dict, tfidf_builder, fit_
         input_vector.append(to_input_vector(messages, tfidf_builder, time_splits)[0])
         output_vector.append(user_class_dict[user])
 
-    return user_vector, np.array(input_vector), np.array(output_vector)
+    return user_vector, input_vector, output_vector
