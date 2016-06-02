@@ -1,11 +1,11 @@
-#import os
-#import sys
+# import os
+# import sys
 import pickle
 
-#import nltk
-#from nltk.stem.wordnet import WordNetLemmatizer
-#from sklearn.feature_extraction.text import TfidfVectorizer
-#from tfidf_builder import TfidfBuilder
+# import nltk
+# from nltk.stem.wordnet import WordNetLemmatizer
+# from sklearn.feature_extraction.text import TfidfVectorizer
+# from tfidf_builder import TfidfBuilder
 from data_preparation import *
 from time import time
 
@@ -25,8 +25,8 @@ ok_users = filter_by_message_count(inputs, lbound, ubound)
 time_threshold = 1000
 ok_users = filter_by_duration(ok_users, user_duration_dict, time_threshold)
 
-#documents = to_documents(ok_users)
-#tfidf_builder.to_tfidf(documents)
+# documents = to_documents(ok_users)
+# tfidf_builder.to_tfidf(documents)
 '''
 bad_users = set([])
 for user in user_duration_dict:
@@ -41,5 +41,5 @@ users_vec, input_vec, output_vec = build_classifier_io(ok_users, outputs, tfidf_
 end = time()
 print(end-start)
 print(len(users_vec), len(input_vec), input_vec[0].shape, len(output_vec))
-#pickle.dump(tfidf_builder, open("tfidf_builder_new.p", "wb"))
+# pickle.dump(tfidf_builder, open("tfidf_builder_new.p", "wb"))
 

@@ -1,8 +1,11 @@
-import scipy as sp
-from sklearn.metrics import log_loss
+# import scipy as sp
+# from sklearn.metrics import log_loss
 from sklearn.cross_validation import train_test_split
+from sklearn.cross_validation import StratifiedKFold
+from sklearn.grid_search import GridSearchCV
 
 
+'''
 def grid_search(model, X_train, X_validate, y_train, y_validate, c1_c2, g1_g2, error_surface=False):
     c1, c2 = c1_c2;
     g1, g2 = g1_g2
@@ -28,9 +31,9 @@ def grid_search(model, X_train, X_validate, y_train, y_validate, c1_c2, g1_g2, e
         return best_c, best_g, errors_train, errors_validate
     else:
         return best_c, best_g
-
-
-def cross_validate(user_messages_dict, user_class_dict, train_perc=0.7, negative_shares=[16, 8, 4, 2, 1], folds=5):
+'''
+'''
+def cross_validate(user_messages_dict, user_class_dict, tfidf_builder, model, parameter_grid, train_perc=0.7, negative_shares=[16, 8, 4, 2, 1], folds=5):
     positive_users = set([])
     negative_users = set([])
     for user in user_class_dict:
@@ -64,3 +67,9 @@ def cross_validate(user_messages_dict, user_class_dict, train_perc=0.7, negative
             split_negative_users[i].add(user)
             i += 1
             i %= negative_share
+'''
+
+
+def cross_validate(inputs, outputs, model, parameter_grid, train_perc=0.7, negative_shares=[16, 8, 4, 2, 1], folds=5):
+    test_size = 1.0 - train_perc
+    train_in, test_in, train_out, test_out = train_test_split(inputs, outputs, test_size=test_size, stratify=outputs)
