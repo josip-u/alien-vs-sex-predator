@@ -70,6 +70,8 @@ def cross_validate(user_messages_dict, user_class_dict, tfidf_builder, model, pa
 '''
 
 
-def cross_validate(inputs, outputs, model, parameter_grid, train_perc=0.7, negative_shares=[16, 8, 4, 2, 1], folds=5):
+def cross_validate(inputs, outputs, model, parameter_grid, train_perc=0.7, negative_splits=[16, 8, 4, 2, 1], folds=5):
     test_size = 1.0 - train_perc
     train_in, test_in, train_out, test_out = train_test_split(inputs, outputs, test_size=test_size, stratify=outputs)
+    for split in negative_splits:
+        splits_in, splits_out = data_split(train_in, train_out, split)
