@@ -1,6 +1,7 @@
 import sys
 import os
 import pickle
+from multiprocessing import cpu_count
 from sklearn.svm import SVC
 
 sys.path.insert(0, os.path.abspath('../parser'))
@@ -9,6 +10,7 @@ from message import *
 from tfidf_builder import *
 from data_preparation import *
 from cross_validation import *
+
 
 print("loading stuff...")
 
@@ -25,9 +27,16 @@ filtered_user_messages_dict = filter_by_message_count(user_messages_dict, lbound
 time_threshold = 1000
 filtered_user_messages_dict = filter_by_duration(filtered_user_messages_dict, user_duration_dict, time_threshold)
 
-model = SVC()
-parameter_grid = {}
-users, inputs, outputs = build_classifier_io(ok_users, outputs, tfidf_builder, fit_builder=False)
-cross_validate(inputs, outputs, model, parameter_grid)
+users, inputs, outputs = build_classifier_io(filtered_user_messages_dict, user_class_dict, tfidf_builder, fit_builder=False)
+del user_messages_dict
+del user_class_dict
+del user_duration_dict
+del tfidf_builder
+del filtered_user_messages_dict
+
+model_constructor = SVC
+parameter_grid = {'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1, 10, 100, 1000]}
+n_jobs = 1
+cross_validate(inputs, outputs, model_constructor, parameter_grid, n_jobs=n_jobs)
 
 print("done")

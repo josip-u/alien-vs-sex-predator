@@ -1,77 +1,76 @@
-# import scipy as sp
-# from sklearn.metrics import log_loss
+# from time import time
 from sklearn.cross_validation import train_test_split
-from sklearn.cross_validation import StratifiedKFold
 from sklearn.grid_search import GridSearchCV
+from sklearn.metrics import fbeta_score
+from sklearn.metrics import classification_report
 
 
-'''
-def grid_search(model, X_train, X_validate, y_train, y_validate, c1_c2, g1_g2, error_surface=False):
-    c1, c2 = c1_c2;
-    g1, g2 = g1_g2
-    C = sp.array([2 ** ci for ci in range(c1, c2 + 1)])
-    G = sp.array([2 ** gi for gi in range(g1, g2 + 1)])
-    errors_train = sp.zeros((len(C), len(G)))
-    errors_validate = sp.zeros((len(C), len(G)))
+def data_split(inputs, outputs, split_count):
+    input_splits = [[] for _ in range(split_count)]
+    output_splits = [[] for _ in range(split_count)]
 
-    best_ij = (0, 0)
-    for i, c in enumerate(C):
-        for j, g in enumerate(G):
-            model.C = c
-            model.gamma = g
-            model.fit(X_train, y_train)
-            errors_train[i, j] = log_loss(y_train, model.predict(X_train))
-            errors_validate[i, j] = log_loss(y_validate, model.predict(X_validate))
-            if errors_validate[i, j] < errors_validate[best_ij]:
-                best_ij = (i, j)
+    index = 0
+    for input_, output_ in zip(inputs, outputs):
+        if output_ == 1:
+            for input_list, output_list in zip(input_splits, output_splits):
+                input_list.append(input_)
+                output_list.append(output_)
+        else:
+            input_splits[index].append(input_)
+            output_splits[index].append(output_)
+            index = (index + 1) % split_count
 
-    best_c = C[best_ij[0]]
-    best_g = G[best_ij[1]]
-    if error_surface:
-        return best_c, best_g, errors_train, errors_validate
+    return input_splits, output_splits
+
+
+def get_best_classifier(classifiers, inputs, outputs, scoring):
+    if scoring == "precision_weighted":
+        beta = 0.5
+    elif scoring == "recall_weighted":
+        beta = 2
     else:
-        return best_c, best_g
-'''
-'''
-def cross_validate(user_messages_dict, user_class_dict, tfidf_builder, model, parameter_grid, train_perc=0.7, negative_shares=[16, 8, 4, 2, 1], folds=5):
-    positive_users = set([])
-    negative_users = set([])
-    for user in user_class_dict:
-        if user_class_dict[user] == 0:
-            negative_users.add(user)
-        else:
-            positive_users.add(user)
+        raise ValueError("wrong scoring method provided")
 
-    train_users = set([])
-    test_users = set([])
-    positive_train_count = int(train_perc * len(positive_users))
-    negative_train_count = int(train_perc * len(negative_users))
-    for user in user_class_dict:
-        if user_class_dict[user] == 0:
-            if negative_train_count > 0:
-                train_users.add(user)
-                negative_train_count -= 1
-            else:
-                test_users.add(user)
-        else:
-            if positive_train_count > 0:
-                train_users.add(user)
-                positive_train_count -= 1
-            else:
-                test_users.add(user)
+    best_score = 0
+    best_classifier = None
+    for classifier in classifiers:
+        predicted_outputs = classifier.predict(inputs)
+        score = fbeta_score(outputs, predicted_outputs, beta)
+        if score > best_score or best_classifier is None:
+            best_score = score
+            best_classifier = classifier
+        print("Fbeta score:", score)
+    print()
 
-    for negative_share in negative_shares:
-        split_negative_users = [set([]) for _ in range(negative_share)]
-        i = 0
-        for user in negative_users:
-            split_negative_users[i].add(user)
-            i += 1
-            i %= negative_share
-'''
+    return best_classifier
 
 
-def cross_validate(inputs, outputs, model, parameter_grid, train_perc=0.7, negative_splits=[16, 8, 4, 2, 1], folds=5):
+def cross_validate(inputs, outputs, model_constructor, parameters, train_perc=0.7, negative_splits=[16, 8, 4, 2, 1], folds=5,
+                   scoring="recall_weighted", n_jobs=1):
     test_size = 1.0 - train_perc
     train_in, test_in, train_out, test_out = train_test_split(inputs, outputs, test_size=test_size, stratify=outputs)
-    for split in negative_splits:
-        splits_in, splits_out = data_split(train_in, train_out, split)
+
+    classifiers = []
+    for splits_count in negative_splits:
+        print("Computing for splits_count: " + str(splits_count) + "...")
+        # split_classifiers = []
+
+        splits_in, splits_out = data_split(train_in, train_out, splits_count)
+        for split_in, split_out in zip(splits_in, splits_out):
+            clf = GridSearchCV(model_constructor(), parameters, cv=folds, scoring=scoring, n_jobs=n_jobs, refit=True)
+            clf.fit(split_in, split_out)
+            classifiers.append(clf)
+            print("Best score:", clf.best_score_)
+            break
+
+        # best_split_classifier = get_best_classifier(split_classifiers, train_in, train_out, scoring)
+        # classifiers.append(best_split_classifier)
+        # print("break2")
+        # break
+
+    best_classifier = get_best_classifier(classifiers, test_in, test_out, scoring)
+    best_classifier.fit(inputs, outputs)
+
+    prediction_out = best_classifier.predict(test_in)
+    print(classification_report(test_out, prediction_out))
+    return best_classifier
