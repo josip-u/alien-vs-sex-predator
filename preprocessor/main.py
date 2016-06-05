@@ -19,27 +19,23 @@ user_duration_dict = pickle.load(open("user_duration_dict.p", "rb"))
 
 print("starting...")
 
-lbound = 5
+lbound = 9
 ubound = 99999
 ok_users = filter_by_message_count(inputs, lbound, ubound)
 time_threshold = 1000
 ok_users = filter_by_duration(ok_users, user_duration_dict, time_threshold)
 
-# documents = to_documents(ok_users)
-# tfidf_builder.to_tfidf(documents)
 '''
-bad_users = set([])
-for user in user_duration_dict:
-    user_time = user_duration_dict[user]
-    if user_time > 1000:
-        bad_users.add(user)
-ok_users = filter_by_id(ok_users, bad_users, exclude=True)
+word_count_threshold = 5
+filtered_out_words = get_filtered_out_words(word_frequency_dict, word_count_threshold)
+tfidf_builder = TfidfBuilder(filtered_out_words)
 '''
 
 start = time()
 users_vec, input_vec, output_vec = build_classifier_io(ok_users, outputs, tfidf_builder, fit_builder=False)
 end = time()
 print(end-start)
-print(len(users_vec), len(input_vec), input_vec[0].shape, len(output_vec))
+# print(len(users_vec), len(input_vec), input_vec[0].shape, len(output_vec))
+print(users_vec.shape, input_vec.shape, output_vec.shape)
 # pickle.dump(tfidf_builder, open("tfidf_builder_new.p", "wb"))
 

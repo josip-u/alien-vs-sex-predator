@@ -78,7 +78,7 @@ def filter_by_duration(user_message_dict, user_duration_dict, threshold):
     filtered_user_message_dict = {}
 
     for user in user_duration_dict:
-        if user_duration_dict[user] < threshold:
+        if user_duration_dict[user] < threshold and user in user_message_dict:
             filtered_user_message_dict[user] = user_message_dict[user]
 
     return filtered_user_message_dict
@@ -132,4 +132,4 @@ def build_classifier_io(user_messages_dict, user_class_dict, tfidf_builder, fit_
         input_vector.append(to_input_vector(messages, tfidf_builder, time_splits)[0])
         output_vector.append(user_class_dict[user])
 
-    return user_vector, input_vector, output_vector
+    return np.array(user_vector), np.array(input_vector), np.array(output_vector)
