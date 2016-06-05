@@ -1,7 +1,7 @@
 import sys
 import os
 import pickle
-from multiprocessing import cpu_count
+from time import time
 from sklearn.svm import SVC
 
 sys.path.insert(0, os.path.abspath('../parser'))
@@ -36,7 +36,9 @@ del filtered_user_messages_dict
 
 model_constructor = SVC
 parameter_grid = {'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1, 10, 100, 1000]}
-n_jobs = 1
-cross_validate(inputs, outputs, model_constructor, parameter_grid, n_jobs=n_jobs)
+negative_splits = [64, 32, 16, 8, 4]
+start = time()
+cross_validate(inputs, outputs, model_constructor, parameter_grid, negative_splits=negative_splits)
+end = time()
 
-print("done")
+print("done in", end-start)
