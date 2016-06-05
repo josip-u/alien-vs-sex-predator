@@ -3,6 +3,8 @@ import os
 import pickle
 from time import time
 from sklearn.svm import SVC
+from sklearn.metrics import make_scorer
+from sklearn.metrics import fbeta_score
 
 sys.path.insert(0, os.path.abspath('../parser'))
 sys.path.insert(0, os.path.abspath('../preprocessor'))
@@ -35,10 +37,11 @@ del tfidf_builder
 del filtered_user_messages_dict
 
 model_constructor = SVC
-parameter_grid = {'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1, 10, 100, 1000]}
-negative_splits = [64, 32, 16, 8, 4]
+parameter_grid = {'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1000, 10000, 100000]}
+negative_splits = [64, 32]  # [64, 32, 16, 8, 4]
+scorer = make_scorer(fbeta_score, beta=1, average="binary", pos_label=1)
 start = time()
-cross_validate(inputs, outputs, model_constructor, parameter_grid, negative_splits=negative_splits)
+cross_validate(inputs, outputs, model_constructor, parameter_grid, scorer=scorer, negative_splits=negative_splits)
 end = time()
 
 print("done in", end-start)
