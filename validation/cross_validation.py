@@ -5,7 +5,7 @@ from sklearn.metrics import fbeta_score
 from sklearn.metrics import classification_report
 
 
-def data_split(inputs, outputs, split_count):
+def data_split(inputs, outputs, split_count, run_all_splits):
     input_splits = [[] for _ in range(split_count)]
     output_splits = [[] for _ in range(split_count)]
 
@@ -20,7 +20,10 @@ def data_split(inputs, outputs, split_count):
             output_splits[index].append(output_)
             index = (index + 1) % split_count
 
-    return input_splits, output_splits
+    if run_all_splits:
+        return input_splits, output_splits
+    else:
+        return input_splits[:1], output_splits[:1]
 
 
 def get_best_classifier(classifiers, inputs, outputs, scorer):
@@ -45,9 +48,8 @@ def cross_validate(inputs, outputs, model_constructor, parameters, scorer, train
     classifiers = []
     for splits_count in negative_splits:
         print("Computing for part size: 1/" + str(splits_count) + "...")
-        # split_classifiers = []
 
-        splits_in, splits_out = data_split(train_in, train_out, splits_count)
+        splits_in, splits_out = data_split(train_in, train_out, splits_count, run_all_splits)
         for split_in, split_out in zip(splits_in, splits_out):
             clf = GridSearchCV(model_constructor(), parameters, cv=folds, scoring=scorer, n_jobs=n_jobs, refit=True)
             clf.fit(split_in, split_out)
@@ -55,11 +57,7 @@ def cross_validate(inputs, outputs, model_constructor, parameters, scorer, train
 
             print("\tBest score:", clf.best_score_)
             print("\tBest params:", clf.best_params_)
-            if not run_all_splits:
-                break
 
-        # best_split_classifier = get_best_classifier(split_classifiers, train_in, train_out, scoring)
-        # classifiers.append(best_split_classifier)
         # print("break2")
         # break
 
