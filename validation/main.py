@@ -2,9 +2,12 @@ import sys
 import os
 import pickle
 from time import time
-from sklearn.svm import SVC
 from sklearn.metrics import make_scorer
 from sklearn.metrics import fbeta_score
+
+from sklearn.svm import SVC
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 
 sys.path.insert(0, os.path.abspath('../parser'))
 sys.path.insert(0, os.path.abspath('../preprocessor'))
@@ -37,9 +40,22 @@ del tfidf_builder
 del filtered_user_messages_dict
 
 model_constructor = SVC
-parameter_grid = {'kernel': ['rbf'], 'gamma': [1e-3, 1e-4], 'C': [1000, 10000, 100000]}
-negative_splits = [64, 32]  # [64, 32, 16, 8, 4]
-scorer = make_scorer(fbeta_score, beta=1, average="binary", pos_label=1)
+# parameter_grid = [{'kernel': ['rbf'], 'gamma': [1e-4, 1e-5, 1e-6], 'C': [10000, 100000, 1000000]}]
+# parameter_grid = [{'kernel': ['linear', 'poly', 'rbf', 'sigmoid'], 'gamma': [1e-5], 'C': [100000]}]
+parameter_grid = [{'kernel': ['linear'], 'gamma': [1e-4, 1e-5, 1e-6], 'C': [10000, 100000, 1000000]}]
+
+'''
+model_constructor = LogisticRegression
+parameter_grid = [{'penalty': ['l2'], 'C': [1000, 10000, 100000], 'solver': ['newton-cg', 'lbfgs', 'liblinear']}]
+'''
+'''
+model_constructor = KNeighborsClassifier
+parameter_grid = [{'n_neighbors': [5, 6, 7], 'weights': ['uniform', 'distance'], }]
+'''
+
+# negative_splits = [16, 8, 6]
+negative_splits = [16]
+scorer = make_scorer(fbeta_score, beta=0.5, average="binary", pos_label=1)
 start = time()
 cross_validate(inputs, outputs, model_constructor, parameter_grid, scorer=scorer, negative_splits=negative_splits)
 end = time()
