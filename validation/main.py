@@ -43,7 +43,7 @@ del filtered_user_messages_dict
 model_constructor = SVC
 # parameter_grid = [{'kernel': ['rbf'], 'gamma': [1e-4, 1e-5, 1e-6], 'C': [10000, 100000, 1000000]}]
 # parameter_grid = [{'kernel': ['linear', 'poly', 'rbf', 'sigmoid'], 'gamma': [1e-5], 'C': [100000]}]
-parameter_grid = [{'kernel': ['linear'], 'gamma': [1e-3, 1e-4], 'C': [100, 1000]}]
+parameter_grid = [{'kernel': ['linear'], 'gamma': [1e-5], 'C': [10000]}]
 
 '''
 model_constructor = LogisticRegression
@@ -54,7 +54,7 @@ model_constructor = KNeighborsClassifier
 parameter_grid = [{'n_neighbors': [5, 6, 7], 'weights': ['uniform', 'distance'], }]
 '''
 
-negative_splits = [16, 8, 6]
+negative_splits = [16, 8, 4]
 # negative_splits = [16]
 scorer = make_scorer(fbeta_score, beta=0.5, average="binary", pos_label=1)
 start = time()
