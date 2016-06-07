@@ -1,7 +1,6 @@
-# from time import time
+import pickle
 from sklearn.cross_validation import train_test_split
 from sklearn.grid_search import GridSearchCV
-from sklearn.metrics import fbeta_score
 from sklearn.metrics import classification_report
 
 
@@ -37,13 +36,17 @@ def get_best_classifier(classifiers, inputs, outputs, scorer):
         print("Fbeta score:", score)
     print()
 
+    pickle.dump(best_score, open("best_score.p", "wb"))
+    pickle.dump(best_classifier, open("best_classifier.p", "wb"))
+
     return best_classifier
 
 
 def cross_validate(inputs, outputs, model_constructor, parameters, scorer, train_perc=0.7,
                    negative_splits=[16, 8, 4, 2, 1], folds=5, n_jobs=1, run_all_splits=False):
     test_size = 1.0 - train_perc
-    train_in, test_in, train_out, test_out = train_test_split(inputs, outputs, test_size=test_size, stratify=outputs)
+    train_in, test_in, train_out, test_out = train_test_split(inputs, outputs, test_size=test_size, stratify=outputs,
+                                                              random_state=1337)
 
     classifiers = []
     for splits_count in negative_splits:
