@@ -19,7 +19,7 @@ from cross_validation import *
 
 print("loading stuff...")
 
-user_messages_dict = pickle.load(open("../parser/inputs_dict_new.p", "rb"))
+user_messages_dict = pickle.load(open("../parser/inputs_dict.p", "rb"))
 user_class_dict = pickle.load(open("../parser/outputs_dict.p", "rb"))
 tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
 user_duration_dict = pickle.load(open("../preprocessor/user_duration_dict.p", "rb"))
@@ -32,7 +32,7 @@ filtered_user_messages_dict = filter_by_message_count(user_messages_dict, lbound
 time_threshold = 1000
 filtered_user_messages_dict = filter_by_duration(filtered_user_messages_dict, user_duration_dict, time_threshold)
 
-users, inputs, outputs = build_classifier_io(filtered_user_messages_dict, user_class_dict, tfidf_builder, fit_builder=False)
+users, inputs, outputs = build_classifier_io(filtered_user_messages_dict, user_class_dict, tfidf_builder)
 del user_messages_dict
 del user_class_dict
 del user_duration_dict
@@ -54,8 +54,8 @@ model_constructor = KNeighborsClassifier
 parameter_grid = [{'n_neighbors': [5, 6, 7], 'weights': ['uniform', 'distance'], }]
 '''
 
-negative_splits = [16, 8, 4]
-# negative_splits = [16]
+# negative_splits = [16, 8, 4]
+negative_splits = [4]
 scorer = make_scorer(fbeta_score, beta=0.5, average="binary", pos_label=1)
 start = time()
 cross_validate(inputs, outputs, model_constructor, parameter_grid, scorer=scorer, negative_splits=negative_splits)

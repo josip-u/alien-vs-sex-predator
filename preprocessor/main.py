@@ -11,7 +11,7 @@ from time import time
 
 print("loading stuff...")
 
-inputs = pickle.load(open("../parser/inputs_dict_new.p", "rb"))
+inputs = pickle.load(open("../parser/inputs_dict.p", "rb"))
 outputs = pickle.load(open("../parser/outputs_dict.p", "rb"))
 token_freq_dict = pickle.load(open("token_freq_dict.p", "rb"))
 tfidf_builder = pickle.load(open("tfidf_builder_new.p", "rb"))
