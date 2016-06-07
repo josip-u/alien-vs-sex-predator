@@ -38,7 +38,7 @@ def get_best_classifier(classifiers, inputs, outputs, scorer):
 
     current_best_score = pickle.load(open("best_score.p, rb"))
     if best_score > current_best_score:
-        print("pickling new champion...")
+        print("pickling new champion (" + str(best_score) + ">" + str(current_best_score) + ")...")
         pickle.dump(best_score, open("best_score.p", "wb"))
         pickle.dump(best_classifier, open("best_classifier.p", "wb"))
 
