@@ -1,3 +1,4 @@
+import os
 import pickle
 from sklearn.cross_validation import train_test_split
 from sklearn.grid_search import GridSearchCV
@@ -36,11 +37,15 @@ def get_best_classifier(classifiers, inputs, outputs, scorer):
         print("Fbeta score:", score)
     print()
 
-    current_best_score = pickle.load(open("best_score.p", "rb"))
-    if best_score > current_best_score:
-        print("pickling new champion (" + str(best_score) + " > " + str(current_best_score) + ")...")
+    if not os.path.exists("best_score.p"):
         pickle.dump(best_score, open("best_score.p", "wb"))
         pickle.dump(best_classifier, open("best_classifier.p", "wb"))
+
+    current_best_score = pickle.load(open("best_score.p", "rb"))
+    if best_score > current_best_score:
+        print("Pickling new champion! (" + str(best_score) + " > " + str(current_best_score) + ")...")
+        pickle.dump(best_score, open("best_score_new.p", "wb"))
+        pickle.dump(best_classifier, open("best_classifier_new.p", "wb"))
 
     return best_classifier
 
@@ -69,6 +74,6 @@ def cross_validate(inputs, outputs, model_constructor, parameters, scorer, train
 
     best_classifier = get_best_classifier(classifiers, test_in, test_out, scorer)
     prediction_out = best_classifier.predict(test_in)
-    print(classification_report(test_out, prediction_out))
+    print("Report:\n", classification_report(test_out, prediction_out))
     print(best_classifier.best_params_)
     return best_classifier
