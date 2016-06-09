@@ -56,7 +56,7 @@ parameter_grid = [{'n_neighbors': [5, 6, 7], 'weights': ['uniform', 'distance'],
 '''
 
 # negative_splits = [8, 6, 4]
-negative_splits = [3]
+negative_splits = [4]
 scorer = make_scorer(fbeta_score, beta=0.5, average="binary", pos_label=1)
 start = time()
 cross_validate(inputs, outputs, model_constructor, parameter_grid, scorer=scorer, negative_splits=negative_splits)

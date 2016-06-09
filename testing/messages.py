@@ -3,6 +3,8 @@ import os
 import pickle
 import numpy as np
 from sklearn.metrics import fbeta_score
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 
 sys.path.insert(0, os.path.abspath('../parser'))
 sys.path.insert(0, os.path.abspath('../preprocessor'))
@@ -13,8 +15,8 @@ print("loading stuff...")
 
 user_messages_dict = pickle.load(open("../parser/test_inputs_dict.p", "rb"))
 positively_predicted_users = pickle.load(open("positively_predicted_users.p", "rb"))
-lines = pickle.load(open("../parser/lines.p", "rb"))
-lines = set(lines)
+positive_messages = pickle.load(open("../parser/lines.p", "rb"))
+positive_messages = set(positive_messages)
 classifier = pickle.load(open("../validation/best_classifier.p", "rb"))
 # classifier = pickle.load(open("../validation/best_classifier_new.p", "rb"))
 tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
@@ -22,39 +24,46 @@ tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
 print("starting...")
 
 all_messages = []
-positive_messages = set([])
+positively_predicted_messages = set([])
 for user in user_messages_dict:
     if user in positively_predicted_users:
         for message in user_messages_dict[user]:
-            positive_messages.add((message._conversation_id, message._message_line))
+            positively_predicted_messages.add((message._conversation_id, message._message_line))
             all_messages.append(message)
 
-tp = lines & positive_messages
-fp = positive_messages - lines
-fn = lines - positive_messages
+tp = positive_messages & positively_predicted_messages
+fp = positively_predicted_messages - positive_messages
+fn = positive_messages - positively_predicted_messages
 print("TP:", len(tp), "FP:", len(fp), "FN:", len(fn))
 
 
-print("building input/output vector...")
+print("building input/output vectors...")
 
 messages_output = []
-input_vectors = []
-counter = 0
-total = len(all_messages)
 for message in all_messages:
-    print(str(counter+1) + "/" + str(total))
-    counter += 1
-
     msg_id = (message._conversation_id, message._message_line)
-    output = 1 if msg_id in lines else 0
+    output = 1 if msg_id in positive_messages else 0
+    print(output)
     messages_output.append(output)
 
-    tfidf_vector = tfidf_builder.to_tfidf_vector(message._text)
-    time_vector = to_time_vector([message])
-    input_vector = np.concatenate((tfidf_vector, time_vector), axis=1)
-    input_vectors.append(input_vector)
+messages_predicted_outputs = None
 
+step = 1000
+total = len(all_messages)
+
+for index in range(0, total, step):
+    print(str(index) + "/" + str(total))
+    for message in all_messages[index : index+step]:
+        input_vectors = []
+        tfidf_vector = tfidf_builder.to_tfidf_vector(message._text)
+        time_vector = to_time_vector([message])
+        input_vector = np.concatenate((tfidf_vector, time_vector), axis=1)
+        input_vectors.append(input_vector[0])
+        output = classifier.predict(input_vectors)
+        messages_predicted_outputs = output if messages_predicted_outputs is None else np.concatenate((messages_predicted_outputs, output))
 
 beta = 3
-score = fbeta_score(messages_output, classifier.predict(input_vectors), beta=beta)
+score = fbeta_score(messages_output, messages_predicted_outputs, beta=beta)
 print("F" + str(beta) + " score is", score)
+print("Report:\n", classification_report(messages_output, messages_predicted_outputs))
+print("Confusion matrix:\n", confusion_matrix(messages_output, messages_predicted_outputs, labels=[1, 0]))
