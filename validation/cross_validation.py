@@ -38,6 +38,7 @@ def get_best_classifier(classifiers, inputs, outputs, scorer):
     print()
 
     if not os.path.exists("best_score.p"):
+        print("Pickling best classifier...")
         pickle.dump(best_score, open("best_score.p", "wb"))
         pickle.dump(best_classifier, open("best_classifier.p", "wb"))
 
