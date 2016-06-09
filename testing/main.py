@@ -46,8 +46,8 @@ print("loading stuff...")
 user_messages_dict = pickle.load(open("../parser/test_inputs_dict.p", "rb"))
 user_class_dict = pickle.load(open("../parser/test_outputs_dict.p", "rb"))
 tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
-classifier = pickle.load(open("../validation/best_classifier.p", "rb"))
-# classifier = pickle.load(open("../validation/best_classifier_new.p", "rb"))
+# classifier = pickle.load(open("../validation/best_classifier.p", "rb"))
+classifier = pickle.load(open("../validation/best_classifier_new.p", "rb"))
 
 print("starting...")
 
@@ -79,13 +79,14 @@ beta = 0.5
 score = fbeta_score(all_outputs, all_predicted, beta=beta)
 print("F" + str(beta) + " score is", score)
 print("Report:\n", classification_report(all_outputs, all_predicted))
-print("Confusion matrix:\n", confusion_matrix(all_outputs, all_predicted, labels=[0, 1]))
+print("Confusion matrix:\n", confusion_matrix(all_outputs, all_predicted, labels=[1, 0]))
 
 
 best_test_score_path = "best_test_score.p"
 postively_predicted_users_path = "postively_predicted_users.p"
 
 if not os.path.exists(best_test_score_path) or score > pickle.load(open(best_test_score_path)):
+    print("Saving results...")
     postively_predicted_users = set([])
     for user, predicted in zip(all_users, all_predicted):
         if predicted == 1:

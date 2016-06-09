@@ -45,11 +45,11 @@ model_constructor = SVC
 # parameter_grid = [{'kernel': ['linear', 'poly', 'rbf', 'sigmoid'], 'gamma': [1e-5], 'C': [100000]}]
 parameter_grid = [{'kernel': ['linear'], 'gamma': [1e-5], 'C': [10000]}]
 '''
-'''
+
 model_constructor = LogisticRegression
 # parameter_grid = [{'penalty': ['l2'], 'C': [1000, 10000, 100000], 'solver': ['newton-cg', 'lbfgs', 'liblinear']}]
-parameter_grid = [{'penalty': ['l2'], 'C': [10000], 'solver': ['newton-cg']}]
-'''
+parameter_grid = [{'penalty': ['l2'], 'C': [1000], 'solver': ['newton-cg']}]
+
 '''
 model_constructor = KNeighborsClassifier
 parameter_grid = [{'n_neighbors': [5, 6, 7], 'weights': ['uniform', 'distance'], }]
