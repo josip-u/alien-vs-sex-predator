@@ -84,7 +84,7 @@ def filter_by_duration(user_message_dict, user_duration_dict, threshold):
     return filtered_user_message_dict
 
 
-def to_time_vector(messages, time_splits):
+def to_time_vector(messages, time_splits=[7, 15, 23]):
     time_vector = [[0 for _ in time_splits]]
 
     for message in messages:
@@ -106,7 +106,7 @@ def to_time_vector(messages, time_splits):
     return np.array(time_vector)
 
 
-def to_input_vector(messages, tfidf_builder, time_splits):
+def to_input_vector(messages, tfidf_builder, time_splits=[7, 15, 23]):
     document = to_document(messages)
     tfidf_vector = tfidf_builder.to_tfidf_vector(document)
     time_vector = to_time_vector(messages, time_splits)

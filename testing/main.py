@@ -83,7 +83,7 @@ print("Confusion matrix:\n", confusion_matrix(all_outputs, all_predicted, labels
 
 
 best_test_score_path = "best_test_score.p"
-postively_predicted_users_path = "postively_predicted_users.p"
+postively_predicted_users_path = "positively_predicted_users.p"
 
 if not os.path.exists(best_test_score_path) or score > pickle.load(open(best_test_score_path)):
     print("Saving results...")
@@ -93,4 +93,4 @@ if not os.path.exists(best_test_score_path) or score > pickle.load(open(best_tes
             postively_predicted_users.add(user)
 
     pickle.dump(postively_predicted_users, open(postively_predicted_users_path, "wb"))
-    pickle.dump(postively_predicted_users, open(best_test_score_path, "wb"))
+    pickle.dump(score, open(best_test_score_path, "wb"))
