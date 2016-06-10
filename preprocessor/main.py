@@ -32,7 +32,7 @@ if os.path.exists(tfidf_builder_path):
     tfidf_builder = pickle.load(open(tfidf_builder_path, "rb"))
     fit_builder = False
 else:
-    print("creating tfidf_builder...")
+    print("creating tfidf_builder object...")
     word_count_threshold = 5
     filtered_out_words = get_filtered_out_words(word_frequency_dict, word_count_threshold)
     tfidf_builder = TfidfBuilder(filtered_out_words)
@@ -51,8 +51,8 @@ start = time()
 if fit_builder:
     documents = to_documents(ok_users)
     tfidf_builder.to_tfidf(documents)
-    end = time()
-print("Time:", end-start)
+end = time()
+print("Time to finish:", end-start)
 pickle.dump(tfidf_builder, open(tfidf_builder_path, "wb"))
 
 # users_vec, input_vec, output_vec = build_classifier_io(ok_users, user_class_dict, tfidf_builder, fit_builder=fit_builder)
