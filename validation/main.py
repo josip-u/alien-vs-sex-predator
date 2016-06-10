@@ -21,7 +21,7 @@ print("loading stuff...")
 
 user_messages_dict = pickle.load(open("../parser/inputs_dict.p", "rb"))
 user_class_dict = pickle.load(open("../parser/outputs_dict.p", "rb"))
-tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
+tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder.p", "rb"))
 user_duration_dict = pickle.load(open("../preprocessor/user_duration_dict.p", "rb"))
 
 print("starting...")

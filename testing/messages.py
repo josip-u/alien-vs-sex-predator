@@ -19,7 +19,7 @@ positive_messages = pickle.load(open("../parser/lines.p", "rb"))
 positive_messages = set(positive_messages)
 classifier = pickle.load(open("../validation/best_classifier.p", "rb"))
 # classifier = pickle.load(open("../validation/best_classifier_new.p", "rb"))
-tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
+tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder.p", "rb"))
 
 print("starting...")
 

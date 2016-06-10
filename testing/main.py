@@ -45,9 +45,9 @@ print("loading stuff...")
 
 user_messages_dict = pickle.load(open("../parser/test_inputs_dict.p", "rb"))
 user_class_dict = pickle.load(open("../parser/test_outputs_dict.p", "rb"))
-tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder_new.p", "rb"))
-# classifier = pickle.load(open("../validation/best_classifier.p", "rb"))
-classifier = pickle.load(open("../validation/best_classifier_new.p", "rb"))
+tfidf_builder = pickle.load(open("../preprocessor/tfidf_builder.p", "rb"))
+classifier = pickle.load(open("../validation/best_classifier.p", "rb"))
+# classifier = pickle.load(open("../validation/best_classifier_new.p", "rb"))
 
 print("starting...")
 
